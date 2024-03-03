@@ -1,42 +1,69 @@
-<<<<<<< HEAD
-# riscie
-=======
-# create-svelte
+# todo-axum-askama-htmx
+Sample application with:
+- Backend: axum, sqlite and askama
+- Frontend: HTMX and TailwindCSS
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+![How the application looks](workflow.gif)
 
-## Creating a project
+## Run
 
-If you're seeing this, you've probably already done this step. Congrats!
+You need to have [rust](https://www.rust-lang.org/) installed.
 
 ```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
+export DATABASE_URL=sqlite://./todos.sqlite
+cargo run
 ```
 
-## Developing
+## Development
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+You need to have completed the previous steps and also have [node](https://nodejs.org/en/download) installed:
 
 ```bash
+# For tailwind hot reload
+npm i -D tailwindcss
 npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
 ```
-
-## Building
-
-To create a production version of your app:
 
 ```bash
-npm run build
+# For the http server hot reload
+# Remember have your DATABASE_URL exported
+cargo install cargo-watch
+cargo watch -x run -w templates -w src -w assets
 ```
 
-You can preview the production build with `npm run preview`.
+## Production
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
->>>>>>> 19c8945 (first commit)
+To have a production tailwind bundle
+
+`npm run prod`
+
+To have a production ready web server:
+
+`cargo build --release`
+
+You will need to keep the `assets` and `templates` folders relative to the binary generated:
+
+```
+.
+├── assets
+│   ├── css
+│   │   └── main.css
+│   ├── favicon.ico
+│   └── js
+│       ├── fontawesome.js
+│       ├── htmx.org@1.9.5_dist_htmx.min.js
+│       └── hyperscript.org@0.9.11_dist__hyperscript.min.js
+├── todosdb.sqlite
+└── todox
+```
+
+## Rebuild database
+
+In case you want to rebuild the sqlite database based on your `DATABASE_URL` env:
+You need to have `libssl-dev` on Ubuntu or `openssl-devel` on Fedora installed.
+
+```bash
+cargo install sqlx-cli
+cargo sqlx database create
+cargo sqlx migrate run
+```
